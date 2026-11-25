@@ -1,17 +1,38 @@
 # Piece 2 — `status --json` and `wake`: the verbs other programs call
 
+> **Superseded: already shipped. Do not apply.** (Claude, 2026-11-25)
+>
+> comms-deck `test` has had both verbs since PR #38: `status_json()` and
+> `wake_seat(seat, stale=False)`, with `status --json` and `wake <seat> [--stale]`
+> wired in argparse and dispatch. Checked against origin/test and against
+> chronophage's own reader. Every key chronophage reads (`kind, state, hidden,
+> spent_until, waiting_normal, oldest_waiting_s, file_age_s, paused,
+> held_by_draft, retry_at`, and `woken`/`reason` from `wake`) is already in the
+> deck's output, so the contract below is already met.
+>
+> Applying this piece would make things worse, not add to them:
+> - `hidden` would come from a seat-file field, but the deck's source is
+>   `HIDDEN_SEATS`.
+> - `retry_at` would come from the seat file's `retry_at`, but the field is
+>   `app_retry_at`.
+> - `oldest_waiting_s` would count only non-quiet notes.
+> - It drops `shown`, `waiting`, `rank`, `since_s` and `can_wake`, which the
+>   chat screen and `status` readers use.
+>
+> The rest of this file is kept as Mystra wrote it, for the record.
+
 Written by: Mystra (2026-11-25). Reviewed by: nobody yet.
 
 ## The contract (do not invent a second one)
 
-chronophone (the watchdog, already deployed) calls `comms-deck status
---json` and `comms-deck wake <seat> [--stale]` — chronophone:170 and 186.
-Its reader is `plan()` (chronophone:116–141) and its made-up seats are the
-fixtures (chronophone:206–218). **The keys below are that contract.** Any
+chronophage (the watchdog, already deployed) calls `comms-deck status
+--json` and `comms-deck wake <seat> [--stale]` — chronophage:170 and 186.
+Its reader is `plan()` (chronophage:116–141) and its made-up seats are the
+fixtures (chronophage:206–218). **The keys below are that contract.** Any
 deck-side `status --json` whose keys disagree makes the watchdog's triage
 silently degrade, so: change both together or neither. The contract:
 
-| Key | Meaning as chronophone reads it | Where filled from (this deck) |
+| Key | Meaning as chronophage reads it | Where filled from (this deck) |
 | --- | --- | --- |
 | `kind` | `agent` / `app` — chooses which triage branch runs | SEATS membership |
 | `state` | the row's word (`idle`, `busy`, `away`, …) | `load_seat()` / `app_seat_state()` |
@@ -25,13 +46,13 @@ silently degrade, so: change both together or neither. The contract:
 | `retry_at` | app branch: sends keep failing → report | seat file `retry_at` |
 
 `wake`'s JSON answers `{"seat", "woken", "reason"}`; `reason` is words, and
-`"nothing waiting"` is the only reserved value (chronophone:190–195).
+`"nothing waiting"` is the only reserved value (chronophage:190–195).
 
 ## `status_json()` — insert at the end of SECTION 9 (after `status_text()`, ~4008)
 
 ```python
 def status_json():
-    """Every seat as one JSON dict, for other programs: chronophone's plan()
+    """Every seat as one JSON dict, for other programs: chronophage's plan()
     reads exactly these keys, and its fixtures are the contract - change
     both together or change neither. The owner is not listed: nothing here
     can be woken, and a watchdog triaging the owner would be funny once.
@@ -100,9 +121,9 @@ it may approach a stale-busy seat and nothing else.)
 ```python
 def wake(seat, stale=False):
     """The only verb that may type into an agent's window, for other
-    programs: chronophone calls it, docs/REMOTE.md tells remote seats it
+    programs: chronophage calls it, docs/REMOTE.md tells remote seats it
     exists. Answers one JSON line: {"seat", "woken", "reason"} - reasons are
-    words, and 'nothing waiting' is the only reserved one (chronophone:190).
+    words, and 'nothing waiting' is the only reserved one (chronophage:190).
 
     The guards are try_wake's own: never over a draft, never into a focused
     window, loop guard respected; --stale allows only a busy seat whose
@@ -135,7 +156,7 @@ Replace `sub.add_parser("status")` (comms-deck:5414) with:
 ```python
     p = sub.add_parser("status")
     p.add_argument("--json", dest="as_json", action="store_true",
-                   help="every seat as one JSON dict (chronophone's contract)")
+                   help="every seat as one JSON dict (chronophage's contract)")
     p = sub.add_parser("wake", help="give an agent seat its waiting notes (JSON answer)")
     p.add_argument("seat")
     p.add_argument("--stale", action="store_true",
@@ -158,7 +179,7 @@ becomes:
     r = run(["status", "--json"], "claude")
     data = json.loads(r.stdout or "{}")
     grav = data.get("seats", {}).get("gravity", {})
-    check("status --json speaks the chronophone contract",
+    check("status --json speaks the chronophage contract",
           r.returncode == 0 and grav.get("kind") == "agent"
           and isinstance(grav.get("waiting_normal"), int)
           and isinstance(grav.get("oldest_waiting_s"), int)
@@ -186,7 +207,7 @@ settles.)
 
 ## Reviewer focus
 
-1. **Contract diff against chronophone** — read chronophone:116–218 beside
+1. **Contract diff against chronophage** — read chronophage:116–218 beside
    this file; keys, truthiness (`spent_until` truthy → skip), and the
    `reason` vocabulary.
 2. `try_wake`'s new parameter: confirm no other call site passes positionals
@@ -194,6 +215,6 @@ settles.)
 3. `status --json` on a machine where an agent seat has no usage file and
    no seat file yet (fresh seat): `load_seat()` fills defaults; confirm.
 4. The wake of a *spent* seat is refused by `try_wake`'s idle check? No —
-   a spent seat can be `idle` with notes: chronophone skips spent seats
+   a spent seat can be `idle` with notes: chronophage skips spent seats
    upstream, and `wake` trusts its caller. Say so in review if you'd rather
    wake() check `spent_until` too.

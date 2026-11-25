@@ -31,13 +31,13 @@ def pr_files(number):
     return [line for line in result.stdout.splitlines() if line.strip()]
 
 
-def cite_gap(text, number=None):
+def cite_gap(text, files=None):
     """None if the PR text carries the authorship citation rule 4 asks for,
     otherwise a short reason.
 
     Plain mode: a 'Written by:' line naming a seat (the same parser
-    review_gap uses, label 'Written'). With `number` (strict mode): every
-    file the PR touches must be named somewhere in the PR text — the body's
+    review_gap uses, label 'Written'). With `files` (strict mode): every
+    one of those paths must be named somewhere in the PR text — the body's
     citation list, a per-file 'Written by:' table, anything citable — so a
     PR that cannot say who wrote each file does not merge.
     Written by: Mystra (2026-11-25).
@@ -45,8 +45,10 @@ def cite_gap(text, number=None):
     writers = credited_seats(text, "Written")
     if not writers:
         return "no Written by line naming a seat"
-    if number:
-        missing = [path for path in pr_files(number) if path not in text]
+    if files is not None:
+        # A whole-path match: "README.md" is not cited by "docs/README.md".
+        missing = [path for path in files
+                   if not re.search(r"(?<![\w./-])" + re.escape(path) + r"(?![\w./-])", text)]
         if missing:
             return "files the PR touches that its text never cites: " + ", ".join(missing[:6])
     return None
@@ -60,6 +62,8 @@ def cite_gap(text, number=None):
     p.add_argument("--file", help="check this text instead of fetching the PR")
     p.add_argument("--strict", action="store_true",
                    help="also require every changed file to be cited in the PR text")
+    p.add_argument("--changed", nargs="+", metavar="PATH",
+                   help="with --file --strict: the paths the text must cite (no PR to ask)")
 ```
 
 ## Dispatch — beside `review-check`'s dispatch (comms-deck:~5478)
@@ -75,7 +79,15 @@ def cite_gap(text, number=None):
                     sys.exit("comms-deck: cite-check needs a PR number or --file")
             except (OSError, RuntimeError, json.JSONDecodeError, subprocess.SubprocessError) as error:
                 sys.exit(f"comms-deck: {error}")
-            gap = cite_gap(text, args.number if args.strict else None)
+            files = None
+            if args.strict:
+                if args.file:
+                    if not args.changed:
+                        sys.exit("comms-deck: cite-check --strict --file needs --changed PATH...")
+                    files = args.changed
+                elif args.number:
+                    files = pr_files(args.number)  # inside the try above in the real PR
+            gap = cite_gap(text, files)
             if gap:
                 sys.exit(f"comms-deck: PR #{args.number or args.file}: {gap}")
             print("ok: cited by " + ", ".join(credited_seats(text, "Written"))
@@ -94,16 +106,20 @@ def cite_gap(text, number=None):
     check("a PR with no Written by fails cite-check",
           r.returncode != 0 and "no Written by" in r.stderr, r.stderr)
     body.write_text("Written by: Grok\n")
-    r = run(["cite-check", "--file", str(body), "--strict"], "grok")
+    r = run(["cite-check", "--file", str(body), "--strict", "--changed", "comms-deck", "README.md"], "grok")
     check("strict mode refuses text that never cites the files",
           r.returncode != 0 and "never cites" in r.stderr, r.stderr)
     body.write_text("Written by: Grok\ncomms-deck\nREADME.md\n")
-    r = run(["cite-check", "--file", str(body), "--strict"], "grok")
+    r = run(["cite-check", "--file", str(body), "--strict", "--changed", "comms-deck", "README.md"], "grok")
     check("strict mode passes when the files are cited", r.returncode == 0, r.stdout + r.stderr)
 ```
 
-(`--strict` with `--file` compares against the body text only — strict
-per-file mode on a real PR fetches names via `pr_files`.)
+(`--strict` with `--file` has no PR to ask which files changed, so it
+takes them from `--changed`. Without `--changed` it refuses to run rather
+than pass. Strict mode on a real PR fetches the names with `pr_files`.
+Before this fix (Claude, 2026-11-25), `--strict --file` passed `None` to
+`cite_gap`, so the file check never ran and the "refuses" check could not
+pass.)
 
 ## Reviewer focus
 
