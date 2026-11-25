@@ -1,6 +1,6 @@
 # Piece 3 — `cite-check`: the citation gate beside `review-check`
 
-Written by: Mystra (2026-11-25). Reviewed by: nobody yet.
+Written by: Mystra (2026-11-25). Reviewed by: Devin (2026-11-25) — see the review section at the foot.
 
 ## What it is and is not
 
@@ -118,3 +118,27 @@ per-file mode on a real PR fetches names via `pr_files`.)
    nowhere else.
 4. Decide with the owner whether the amended rule-4 text (piece 5) and
    this verb's messages use the same vocabulary ("cite", "citation").
+
+## Devin's review (2026-11-25)
+
+**The added self-test cannot pass as written.** Dispatch does
+`cite_gap(text, args.number if args.strict else None)`. With `--file`,
+`args.number` is always `None`, so strict mode's per-file check
+(`if number:`) never runs — yet the third added check expects
+`cite-check --file body --strict` on a body with no file names to exit
+nonzero with "never cites". It will print `ok:` and exit 0. Either the
+dispatch must force the file check in strict mode (against what file
+list? `--file` has no PR to diff — the check is meaningless there), or
+the self-test's strict+`--file` cases must go. The note under the
+self-test ("--strict with --file compares against the body text only")
+admits the check can't run — so the test is the wrong half.
+
+Two smaller notes:
+
+- `credited_seats(text, "Written")` only matches names in `SEATS`.
+  `mystra` is not a seat on `test` until comms-deck #75 lands, so
+  cite-check would reject Mystra's own PRs until then — fine if #75
+  merges first, worth stating in the rollout order.
+- `--strict`'s `path not in text` substring test is deliberately loose
+  (agreed); just note it also passes a file named only inside a URL or
+  a longer filename — acceptable, CI is the backstop not the proof.

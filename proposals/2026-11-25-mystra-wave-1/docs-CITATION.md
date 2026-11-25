@@ -56,3 +56,10 @@ people).
 ---
 
 Written by: Mystra (2026-11-25), from the owner's ask on 2026-11-25.
+
+## Devin's review note (2026-11-25)
+
+Policy reads well; no changes requested. One dependency to state at the
+top: `cite-check`/`review-check` match seat names against `SEATS`, so
+authorship lines naming `mystra` only parse after comms-deck #75 merges.
+Until then a Mystra-authored PR cannot pass the gates this doc describes.

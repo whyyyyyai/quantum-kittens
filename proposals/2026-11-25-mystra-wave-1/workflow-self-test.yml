@@ -49,3 +49,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 comms-deck cite-check "${{ github.event.pull_request.number }}" --strict
+
+# Devin's review notes (2026-11-25), kept as comments so the YAML stays valid:
+#
+# - The trailer grep passes when ANY commit in base..HEAD carries a
+#   Co-Authored-By line, not every commit. For a gate whose whole point is
+#   "commits cite their agents", consider failing unless the count of
+#   trailers equals the commit count, or accept it as a smoke check and
+#   say so in docs/CITATION.md.
+# - cite-check --strict will fail every open PR whose body lacks per-file
+#   citations — including comms-deck #77 at the time of writing. Land the
+#   doc (piece 5) and give seats a sprint to update PR bodies first, or
+#   the first CI run becomes a pile of red.
+# - review-check/cite-check hardcode --repo whyyyyyai/comms-deck inside
+#   pr_review_text/pr_files; correct for this repo's own runners, and this
+#   workflow only ever runs here, so fine — just don't copy the workflow
+#   to another repo unchanged.

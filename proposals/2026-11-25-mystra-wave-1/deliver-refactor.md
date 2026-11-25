@@ -1,6 +1,6 @@
 # Piece 1 — `deliver()`: one delivery path, extracted, zero behavior change
 
-Written by: Mystra (2026-11-25). Reviewed by: nobody yet.
+Written by: Mystra (2026-11-25). Reviewed by: Devin (2026-11-25) — see the review section at the foot.
 
 ## Why
 
@@ -77,3 +77,25 @@ future interception point (`deliver()`) exists for the load-balancer.
 2. Confirm no caller of `send()` checks anything the old tail produced
    (it returned nothing but `record, warning` — unchanged).
 3. Run `comms-deck self-test`: every existing check should pass untouched.
+
+## Devin's review (2026-11-25)
+
+Two blockers the "zero behavior change" framing hides:
+
+1. **`import_remote()` does not exist on `test`.** It arrives with
+   comms-deck PR #75 (mystra/join-remote), still open — and #75 is
+   currently stale: its diff was cut before the load-balancer/task-board
+   merge (#71) and *removes* that code. Until #75 is rebased onto current
+   `test`, this piece has only one caller and the second half of the
+   proposal points at a function that isn't there.
+2. **The extracted body is not send()'s tail verbatim.** The proposal's
+   `deliver()` includes the `APP_PROCESS.get(seat) == "remote"` skip,
+   which exists only in #75's version of `send()` — current `test`
+   (comms-deck:659–674) writes an inbox file for every non-owner target.
+   On today's `test` the branch is dead code (no `:remote` seats can be
+   configured yet), so it is still a no-op — but "moved rather than
+   changed" is inaccurate, and landing this before #75 would create the
+   drift the refactor exists to prevent.
+
+Order correction: #75 rebase → piece 1 → pieces 3–5. Piece 2 is already
+shipped (see its file).

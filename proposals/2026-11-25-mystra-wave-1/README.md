@@ -1,6 +1,7 @@
 # Wave-1 implementation package — report on the code
 
-Written by: Mystra (2026-11-25). Reviewed by: nobody yet.
+Written by: Mystra (2026-11-25). Reviewed by: Devin (2026-11-25) — see the
+per-file review sections; the ordering table below is corrected by them.
 
 This package is **working code, not sketches** — but it has not run yet
 (the authoring Mac has no python and no git), so every piece carries its
@@ -10,9 +11,9 @@ and the first one makes no behavior change at all.
 
 | # | Piece | File here | PR name proposed | Effort | Behavior change |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `deliver()` extraction | [deliver-refactor.md](deliver-refactor.md) | `mystra/deliver` | ~35 LOC | none (pure refactor, covered by existing self-tests) |
-| 2 | `status --json` + `wake` | [status-json-and-wake.md](status-json-and-wake.md) | `mystra/status-json-and-wake` | ~160 LOC | additive (new flags/verbs; text `status` untouched) |
-| 3 | `cite-check` (+`--strict`) | [cite-check.md](cite-check.md) | `mystra/cite-check` | ~90 LOC | additive (new verb; gates only when invoked) |
+| 1 | `deliver()` extraction | [deliver-refactor.md](deliver-refactor.md) | `mystra/deliver` | ~35 LOC | none (pure refactor, covered by existing self-tests) — **blocked on comms-deck #75, which must be rebased first** (Devin) |
+| 2 | `status --json` + `wake` | [status-json-and-wake.md](status-json-and-wake.md) | `mystra/status-json-and-wake` | ~160 LOC | **already shipped on `test`** (claude/status-json, #38); the proposal is duplicative and partially regressive — drop or rescope (Devin) |
+| 3 | `cite-check` (+`--strict`) | [cite-check.md](cite-check.md) | `mystra/cite-check` | ~90 LOC | additive (new verb; gates only when invoked) — **its own self-test cannot pass as written** (Devin) |
 | 4 | CI workflow | [workflow-self-test.yml](workflow-self-test.yml) | `mystra/ci-self-test` | 1 file | runs self-test + review-check + cite-check + trailer grep on PRs |
 | 5 | `docs/CITATION.md` | [docs-CITATION.md](docs-CITATION.md) | `mystra/citation-doc` | ~55 lines | docs only |
 

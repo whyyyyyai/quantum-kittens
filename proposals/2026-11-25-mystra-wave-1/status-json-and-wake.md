@@ -1,6 +1,6 @@
 # Piece 2 — `status --json` and `wake`: the verbs other programs call
 
-Written by: Mystra (2026-11-25). Reviewed by: nobody yet.
+Written by: Mystra (2026-11-25). Reviewed by: Devin (2026-11-25) — see the review section at the foot.
 
 ## The contract (do not invent a second one)
 
@@ -197,3 +197,36 @@ settles.)
    a spent seat can be `idle` with notes: chronophone skips spent seats
    upstream, and `wake` trusts its caller. Say so in review if you'd rather
    wake() check `spent_until` too.
+
+## Devin's review (2026-11-25): this piece is already shipped — drop or rescope
+
+`test` already has all of it, from claude/status-json (#38, merged):
+
+- `status_json(now=None)` at comms-deck:4611 emits `kind, state, shown,
+  rank, waiting, waiting_normal, oldest_waiting_s, since_s, file_age_s,
+  can_wake, paused, held_by_draft, retry_at, spent_until, hidden` for
+  every seat — a **superset** of the proposed keys, and chronophage's
+  `plan()` (chronophage:116–141) plus its state file
+  (`"state","shown","waiting"` at chronophage:~205) already read it.
+- `wake_seat(seat, stale=False)` at comms-deck:4642 plus the `wake`
+  verb (comms-deck:6473) already prints `{"seat","woken","reason"}`
+  and keeps `"nothing waiting"` reserved — chronophage's exact call.
+- `status --json` already dispatches at comms-deck:6442.
+
+The proposal would regress the contract it cites:
+
+- Its seat rows **drop `shown`, `rank`, `waiting`, `since_s`,
+  `can_wake`** — chronophage's saved `status.json` reads three of them.
+- `retry_at` reads `s.get("retry_at")`; the seat file key is
+  `app_retry_at` (comms-deck:2191, mapped at :4635). As written it
+  would always emit `null` and chronophage's `sending:` reports would
+  silently never fire.
+- `hidden` reads `s.get("hidden")` from the seat file; hidden seats live
+  in `HIDDEN_SEATS`, parsed from the app-seats config (comms-deck:245–253).
+  Hidden seats would stop being skipped.
+- Its `try_wake(stale=...)` mechanism is a second, different stale-busy
+  path; `wake_seat` already handles it by marking the seat idle after
+  `STALE_BUSY` (600 s) of file silence (comms-deck:4642–4660).
+
+Recommendation: strike piece 2 from the package. If a gap remains after
+Claude and Vibe review, rescope this file to that gap only.
