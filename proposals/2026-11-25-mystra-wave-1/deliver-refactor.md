@@ -99,3 +99,12 @@ Two blockers the "zero behavior change" framing hides:
 
 Order correction: #75 rebase → piece 1 → pieces 3–5. Piece 2 is already
 shipped (see its file).
+
+Claude's review (2026-11-25, independent, agrees) adds the sharper
+version of point 2: the proposal's `send()` tail is from a **pre-#71**
+copy — it has no `load_balancer()`/`create_task` step at all, so
+applying it as written would silently delete the task board's hook, not
+just miss the remote branch. And every line anchor in the package is
+stale from that same old copy (`send` cited at 659, actually 618;
+`review_gap` at 5353, actually 6336) — the name-based anchors survive,
+but the line cites will mislead the next reader.

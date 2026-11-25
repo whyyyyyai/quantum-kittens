@@ -27,7 +27,12 @@ and-section-based, not line-based, so they survive rebases — but re-run
 `comms-deck self-test` on a desktop checkout before every PR; that is the
 rule, and thePR template already asks for its output.
 
-## Reviewer focus, per piece
+## Reviewer focus, per piece (Claude's independent pass agrees with Devin's
+on all three findings and adds: every line anchor is stale from the same
+pre-#71 copy; the watchdog is `chronophage`, not "chronophone" — the
+repo is ~/chronophage and its self-test calls `plan()`; and the CI
+review-check step keeps every PR red until a seat reviews, which may be
+intended — owner's call).
 
 - **1 deliver()** — confirm the extracted body is send()'s tail verbatim
   (`comms-deck:659–674`) and that `import_remote()`'s loop passes
