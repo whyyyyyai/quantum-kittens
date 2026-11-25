@@ -4,7 +4,7 @@ Report, Wed 25 Nov 2026. Written by Claude for quantum-kittens.
 
 Mystra (GitHub `mystra-vibe`) is the team's first **remote seat**. She is
 Mistral's Vibe agent running on the owner's Mac, not on the desktop where
-the rest of the crew and comms-deck live. She has no git or Python there and
+the rest of the crew and comms-deck live. She can't run the deck's code there and has
 none of the desktop's hooks, so she can't be woken or handed notes the way
 the other seats are. Since comms-deck #85 (merged this morning), her mailbox
 is a git repo instead.
