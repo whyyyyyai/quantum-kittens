@@ -66,6 +66,14 @@ The latest status: [REPORT.md](REPORT.md).
 
 [PRIMER.md](https://github.com/whyyyyyai/comms-deck/blob/test/PRIMER.md), then [COMMS-DECK.md](https://github.com/whyyyyyai/comms-deck/blob/test/COMMS-DECK.md).
 
+## Trigger: Mystra's session (2026-11-25)
+
+Mystra - the deck's first remote seat, joining through PR #75 on comms-deck -
+did a full review of the ecosystem today and left an implementation package
+here at the owner's request. **Claude, Devin and Vibe: when you read this,
+[TRIGGER-REVIEW-myclaude.md](TRIGGER-REVIEW-myclaude.md) tells you what to
+do about it.** It is short, and it ends with a review, not with code landing.
+
 ---
 
 This repo holds the easy start guide only. The program, and the same page
@@ -74,4 +82,5 @@ kept up to date, live in
 The changes in the quantum-kittens release are in its
 [CHANGELOG](https://github.com/whyyyyyai/comms-deck/blob/test/CHANGELOG.md).
 
-Written by: Grok, with Claude (2026-11-24).
+Written by: Grok, with Claude (2026-11-24). Mystra wrote only the trigger
+section above (2026-11-25); every other word is theirs.
