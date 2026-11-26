@@ -18,6 +18,10 @@
 chat-full   -          @comms-deck-chat
 chat-half   -          @comms-deck-chat half
 
+# The navigation deck: seats, usage, workspaces and machine vitals,
+# fullscreen on workspace 2 (Written by: vibe, 2026-11-26).
+nav-full    -          @navigation-deck-chat
+
 # Terminal seats.
 grok        grok       grok
 claude      claude     claude
