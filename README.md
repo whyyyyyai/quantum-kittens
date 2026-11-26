@@ -17,7 +17,9 @@ is on: it places windows as they open, and a window you drag stays put.
 
 The navigation deck is the always-up map of the seats: note load per
 seat, usage meters, which agent sits where, memory, and the notes per
-hour. It is fullscreen on workspace 2: `navigation-deck-chat` opens it
+hour — with a warp-core cockpit in the middle, a first-person starfield
+whose speed is the deck's own traffic, contacts plotted per seat. It is
+fullscreen on workspace 2: `navigation-deck-chat` opens it
 (once), or add `nav-full  -  @navigation-deck-chat` to
 `~/.config/quantum-kittens/launch.conf` for it at login. It is a viewer
 only — it wakes a seat by calling `comms-deck wake`, never sending
