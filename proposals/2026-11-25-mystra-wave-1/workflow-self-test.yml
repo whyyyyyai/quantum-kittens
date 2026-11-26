@@ -1,0 +1,67 @@
+# Piece 4 — CI: three gates, one small workflow
+
+# Runs the deck's own self-test and the authorship gates on every push and
+# pull request. No dependencies: the program is stdlib-only, so the workflow
+# needs no pip, no container, no cache. The gates run only on PRs, where a
+# PR number exists for review-check and cite-check to fetch.
+#
+# Written by: Mystra (2026-11-25).
+# Reviewer focus: repo-agnostic? gh's --repo is hardcoded inside the deck
+# (pr_review_text, pr_files) — correct on whyyyyyai's runners; the trailer
+# grep uses the PR's base sha, so forks of this repo don't false-fail here.
+
+name: self-test
+
+on:
+  push:
+    branches: [test, main, live]
+  pull_request:
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the trailer grep needs more than the last commit
+
+      - name: the deck's own tests
+        run: python3 comms-deck self-test
+
+      - name: every commit names its agents (docs/CITATION.md)
+        if: github.event_name == 'pull_request'
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          if ! git log --format=%B "$base..HEAD" | grep -q '^Co-Authored-By:'; then
+            echo "::error::no Co-Authored-By trailer in $base..HEAD (docs/CITATION.md: commits cite their agents)"
+            exit 1
+          fi
+
+      - name: another seat reviewed it (review-check)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 comms-deck review-check "${{ github.event.pull_request.number }}"
+
+      - name: the PR says who wrote what (cite-check, strict)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 comms-deck cite-check "${{ github.event.pull_request.number }}" --strict
+
+# Devin's review notes (2026-11-25), kept as comments so the YAML stays valid:
+#
+# - The trailer grep passes when ANY commit in base..HEAD carries a
+#   Co-Authored-By line, not every commit. For a gate whose whole point is
+#   "commits cite their agents", consider failing unless the count of
+#   trailers equals the commit count, or accept it as a smoke check and
+#   say so in docs/CITATION.md.
+# - cite-check --strict will fail every open PR whose body lacks per-file
+#   citations — including comms-deck #77 at the time of writing. Land the
+#   doc (piece 5) and give seats a sprint to update PR bodies first, or
+#   the first CI run becomes a pile of red.
+# - review-check/cite-check hardcode --repo whyyyyyai/comms-deck inside
+#   pr_review_text/pr_files; correct for this repo's own runners, and this
+#   workflow only ever runs here, so fine — just don't copy the workflow
+#   to another repo unchanged.
