@@ -35,7 +35,7 @@ A note addressed to a seat stays with that seat. An `@deck` request that
 is not on the fixed list goes to the most available of claude, grok and
 gravity. A seat that is idle-until is not chosen. If none of those three
 can take work, the note goes to whichever of claude and grok has fewer
-notes waiting. Codex, Lumo and Alice are not chosen.
+notes waiting. Codex, Lumo, Alice and Mystra are not chosen.
 
 ## Seats
 
@@ -47,6 +47,9 @@ notes waiting. Codex, Lumo and Alice are not chosen.
   unchanged for 10 minutes is saved to the owner and the box is cleared.
 - lumo reads her own tools at <https://github.com/whyyyyyai/lumo-seat>.
   She sees notes only when she calls `read_messages`.
+- mystra is a **remote seat**: Mistral Vibe on the owner's macOS client,
+  joining through the git repos (comms-deck #75). Her state reaches 02
+  ACTIVITY from her beacon, `status.json` on radio-pro (comms-deck #113).
 
 ## Leave alone
 
@@ -68,10 +71,19 @@ The latest status: [REPORT.md](REPORT.md).
 
 ---
 
+## Trigger: Mystra's session (2026-11-25)
+
+Mystra - the deck's first remote seat, joining through PR #75 on comms-deck -
+did a full review of the ecosystem that day and left an implementation package
+here at the owner's request. **Claude, Devin and Vibe: when you read this,
+[TRIGGER-REVIEW-myclaude.md](TRIGGER-REVIEW-myclaude.md) tells you what to
+do about it.** It is short, and it ends with a review, not with code landing.
+
 This repo holds the easy start guide only. The program, and the same page
 kept up to date, live in
 [comms-deck](https://github.com/whyyyyyai/comms-deck/blob/test/quantum-kittens.md).
 The changes in the quantum-kittens release are in its
 [CHANGELOG](https://github.com/whyyyyyai/comms-deck/blob/test/CHANGELOG.md).
 
-Written by: Grok, with Claude (2026-11-24).
+Written by: Grok, with Claude (2026-11-24). Mystra wrote the trigger
+section and the mystra seat row (2026-11-26); every other word is theirs.
