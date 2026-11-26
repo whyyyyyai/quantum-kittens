@@ -28,6 +28,10 @@
 # Written by: Claude (2026-11-25). Reviewed by: Grok (PR #2).
 
 set -u
+
+# Agent CLIs that install under ~ (Grok in ~/.grok/bin) are on PATH only in
+# interactive shells, so add them here or login would skip those seats.
+PATH="$HOME/.local/bin:$HOME/.grok/bin:$PATH"; export PATH
 HERE=$(cd "$(dirname "$0")" && pwd)
 CONF_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/quantum-kittens
 CONF=$CONF_DIR/launch.conf
