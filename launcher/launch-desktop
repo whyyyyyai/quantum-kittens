@@ -41,6 +41,18 @@ say() { printf 'launch-desktop: %s\n' "$*"; }
 # have: true if a program is on PATH.
 have() { command -v "$1" >/dev/null 2>&1; }
 
+# agent_bins: at login this runs under the systemd user environment, whose
+# PATH is short: an agent installed into its own bin dir (grok lives in
+# ~/.grok/bin) is invisible to `have`, so its window was skipped every
+# login (the 2026-11-25 outage report). Add the bin dirs that exist; the
+# user's own PATH and environment are untouched.
+agent_bins() {
+    for dir in "$HOME/.local/bin" "$HOME/.grok/bin" "$HOME/bin" "$HOME/.cargo/bin"; do
+        [ -d "$dir" ] || continue
+        case ":$PATH:" in *":$dir:"*) ;; *) PATH="$PATH:$dir" ;; esac
+    done
+}
+
 # run: do it, or print it under --dry-run.
 run() {
     if [ "$DRY" = 1 ]; then say "would run: $*"; else "$@"; fi
@@ -196,6 +208,7 @@ esac
 
 say "using $CONF"
 start_services
+agent_bins
 open_windows
 arrange
 say "done"
