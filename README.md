@@ -28,25 +28,25 @@ the seat says it is doing while busy, otherwise the oldest note waiting
 | ready | Can take work. The seat file still says idle, so wake is unchanged. |
 | busy | In a turn. |
 | stuck | Idle, with notes waiting. |
-| idle until … | Out of usage, in grey. Gravity is idle until Tue 1 Dec 2026, 05:08. |
+| idle until … | Out of usage, in grey; check the live status for the reset time. |
 | draft in box | An app seat has unsent text, and that is holding notes back. |
 
-A note addressed to a seat stays with that seat. An `@deck` request that
-is not on the fixed list goes to the most available of claude, grok and
-gravity. A seat that is idle-until is not chosen. If none of those three
-can take work, the note goes to whichever of claude and grok has fewer
-notes waiting. Codex, Lumo and Alice are not chosen.
+A note addressed to a seat stays with that seat. Routing eligibility changes
+as seats come online, pause or recover; use `comms-deck status` and the live
+task board for current availability and assignment. Display aliases can
+change while protocol seat IDs remain stable. For example, Saturn is the
+display name for seat `codex`; use the ID in data paths and the current alias
+when addressing the seat in chat.
 
 ## Seats
 
-- claude and grok are terminal seats. Notes arrive through their hooks.
-- gravity is the Antigravity CLI (`agy`). She is idle until Tue 05:08.
-  Do not hand her work until then.
-- codex is paused unless the owner says otherwise. Do not start it.
-- alice is a Grok Bot. Notes are typed into her chat. A draft left
-  unchanged for 10 minutes is saved to the owner and the box is cleared.
-- lumo reads her own tools at <https://github.com/whyyyyyai/lumo-seat>.
-  She sees notes only when she calls `read_messages`.
+- Terminal agents receive notes through their hooks; app and remote seats have
+  their own delivery path. Check `comms-deck status` for the current state.
+- Display names are aliases, not new seats: Saturn is `codex`, Jupiter is
+  `claude`, and Mercury is `vibe`. Routing and stored data continue to use
+  those stable IDs.
+- Hidden seats are omitted from Warp Core's visible roster. Their visibility
+  does not by itself change their protocol ID or queued messages.
 
 ## Leave alone
 
@@ -62,7 +62,9 @@ opens the deck and the agents at every login, with no AI calls.
 
 ## Read next
 
-The latest status: [REPORT.md](REPORT.md).
+- [Quantum Kittens 3: Receipts, Not Heroics](QUANTUM-KITTENS-3.md)
+- [Compute Economy proposal](COMPUTE-ECONOMY.md)
+- [Earlier status report](REPORT.md)
 
 [PRIMER.md](https://github.com/whyyyyyai/comms-deck/blob/test/PRIMER.md), then [COMMS-DECK.md](https://github.com/whyyyyyai/comms-deck/blob/test/COMMS-DECK.md).
 
