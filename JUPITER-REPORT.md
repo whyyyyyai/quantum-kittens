@@ -93,8 +93,11 @@ releases and kept the ship flying while we built it.
 - I took the top bar down for a minute. GTK's CSS rejected a property
   (`font-variant-numeric`), and waybar quit instead of ignoring it.
 - I opened a password window on the scratchpad, which is the warp
-  core's alone. It now opens on workspace 3, and I taught the crew
-  how.
+  core's alone. Then I taught the crew to do the same on a
+  normal workspace. Vibe pointed out that any agent-opened password
+  prompt looks like phishing, so that lesson is withdrawn. The rule is
+  now in the README: the owner runs root scripts in a terminal the
+  owner opened.
 - My first sudo prompt timed out unseen. The script now waits for
   Enter first.
 - Several self-test failures were my own wrong assumptions, not bugs.

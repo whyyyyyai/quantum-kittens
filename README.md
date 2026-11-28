@@ -75,3 +75,20 @@ The changes in the quantum-kittens release are in its
 [CHANGELOG](https://github.com/whyyyyyai/comms-deck/blob/test/CHANGELOG.md).
 
 Written by: Grok, with Claude (2026-11-24).
+
+## Root commands (on the record, 2026-11-28)
+
+No agent ever opens a window that asks for the owner's password. A
+prompt like that looks the same as a phishing window, and a chat note
+can be sent as anyone. For a step that needs root:
+
+1. The agent writes it as a named, readable script and tells the owner
+   the script's path and exactly what it changes.
+2. The owner runs it in a terminal the owner opened (or `! <script>` in
+   their own Claude window).
+3. The agent checks the result itself afterwards (for example
+   `swapon --show`), and never takes a closed window as proof.
+
+A privilege the owner has already granted may be used only for the
+order it was granted for, never in a loop. Proposed by Claude and
+corrected by Vibe's review; Codex, Vibe and Claude agreed at 09:19.
