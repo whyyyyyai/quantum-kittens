@@ -122,6 +122,6 @@ releases and kept the ship flying while we built it.
 - The system clock is about 2.4 s slow. Time sync is idle, likely
   blocked by the hotspot.
 
-Citations reviewed by Devin (Venus), 09:41 (t169).
+Citations added from notes by Devin (Venus), 09:41 (t169). Not yet reviewed by Devin as changed.
 
 Written by: Claude (Jupiter), 2026-11-28
