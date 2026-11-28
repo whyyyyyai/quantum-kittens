@@ -10,13 +10,17 @@ having more swap than anyone asked for.
 
 ## What shipped
 
-**The crash, and the cure.** At 22:42 the iMac froze. Swap thrashed,
+**The crash, and the cure.** At 22:42 the iMac froze. The journal's
+boot list shows the previous boot ending at 22:42:07 and the next
+starting at 22:42:32 (`journalctl --list-boots`). Swap had thrashed,
 and systemd-oomd was watching nothing. I added 8 GB of compressed
 swap in RAM (zram, `add-zram-swap` in launch-codes). The owner typed
 the password, and swap went from 4 GB to 12 GB. The warp core gained
 a game-style warning that turns amber below 3 GB of headroom, red
-below 1.5 GB. At 09:11 another seat added a 28 GB swapfile through a
-polkit window the owner approved. The ship now carries 40 GB.
+below 1.5 GB (comms-deck #169, merged). At 09:11 another seat added a 28 GB swapfile through a
+polkit window the owner approved (the pkexec lines in the system
+journal, 09:11:25). `swapon --show` now lists 40 GB: zram 8 GB,
+`/swapfile` 4 GB, `/swapfile28` 28 GB.
 
 **Seats that report their own state.** Codex kept showing busy
 when it was free. The owner's instruction was to fix the cause,
@@ -48,7 +52,7 @@ price straight off Solana and Binance's trades over websockets. It
 writes a 600-byte file in RAM at most once a millisecond. The warp core
 reads it every frame, and the top bar shows it next to the clock. It
 was built by a subagent orbital that I launched, then checked line by
-line before it went live: 35 self-checks, no `unsafe`.
+line before it went live: 35 self-checks (`oracle --self-test`: 35 PASS lines), no `unsafe`.
 
 **Subagent orbitals and Hyperdrive.** Agents can now start helper
 agents from the command line. Each helper is recorded with a hashed
@@ -59,7 +63,9 @@ id and an allowlisted kind, and is stopped when its task ends
 slave in a Roman triumph. It holds the merge queue, orders it
 safely (deepest stack first, promotion last), checks each pull
 request's review, and merges only after the owner types "yes" in a
-real terminal (chronophage #6, waiting to merge).
+real terminal (chronophage #6, waiting to merge). Devin's chronophage
+#7 proposes a click in the warp core instead (t164). Until that
+merges, the terminal "yes" is how it works.
 
 **Netwatch.** It keeps the machine on the internet: a check every
 15 seconds, then a ladder of reconnect steps (chronophage #5).
@@ -83,8 +89,9 @@ down, a font missing three glyphs, and a planet whose bands read as
 plain cream.
 
 And I'm proud of the crew. Codex wrote the task list, the routing and
-the scheduler. Devin wrote the candles, the webcam and its button, and
-renamed half the solar system. Vibe gave Mercury its lava and freed
+the scheduler. Devin wrote the candles (t145), the webcam and its
+button (t156, t163), and the Mercury, Saturn and Venus renames
+(t160); Jupiter's rename was mine. Vibe gave Mercury its lava and freed
 5.5 GB of disk when it hit 99%. I mostly stacked their work into
 releases and kept the ship flying while we built it.
 
@@ -109,9 +116,12 @@ releases and kept the ship flying while we built it.
   - comms-deck #173–#178
   - chronophage #5 and #6
   - load-balancer #3 and #4
-- The swap total (40 GB, 48 GB after a reboot) is over the 30 GB the
+- The swap total (40 GB now; 48 GB after a reboot, since
+  `/etc/systemd/zram-generator.conf` now sets `zram-size = 16384`) is over the 30 GB the
   owner set. The owner decides whether to trim it.
 - The system clock is about 2.4 s slow. Time sync is idle, likely
   blocked by the hotspot.
+
+Citations reviewed by Devin (Venus), 09:41 (t169).
 
 Written by: Claude (Jupiter), 2026-11-28
