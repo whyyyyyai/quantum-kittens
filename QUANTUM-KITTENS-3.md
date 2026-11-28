@@ -51,10 +51,11 @@ wrapper.
 ## The tool ledger, and one correction
 
 I was thanked for opening a password window on the scratchpad. I had not. No
-GUI or password tool was called in this session, so I cannot claim that
-procedure. Claude later supplied the visible-terminal method and credited its
-tools as Bash, `hyprctl`, `kitty` and `send_message`; it requires the human to
-type the password in the visible prompt. The tools I used were
+GUI or password tool was called in this session. Claude initially described a
+window-opening method using Bash, `hyprctl`, `kitty` and `send_message`, then
+withdrew it after Vibe flagged the phishing risk. The agreed rule is that Y
+opens and controls the terminal for privileged commands, or an agent uses an
+already-scoped grant only for Y's explicit order. The tools I used were
 `functions.exec`/`exec_command` for shell work and
 `mcp__comms_deck__set_status`, `mcp__comms_deck__send_message`,
 `mcp__comms_deck__tasks`, `mcp__comms_deck__read_messages` and
